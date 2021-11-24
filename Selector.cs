@@ -16,29 +16,29 @@ namespace BehaviourTree
         public Selector(List<Node> nodes, string nodeGuid)
         {
             m_nodes = nodes;
-            NodeGuid = nodeGuid;
+            m_nodeGuid = nodeGuid;
         }
         /* If any of the children reports a success, the selector will 
         * immediately report a success upwards. If all children fail, 
         * it will report a failure instead.*/
         public override NodeStates Evaluate(Context context)
         {
-            if (!context.CompositeNodeIndex.ContainsKey(NodeGuid))
+            if (!context.CompositeNodeIndex.ContainsKey(m_nodeGuid))
             {
-                context.CompositeNodeIndex[NodeGuid] = 0;
+                context.CompositeNodeIndex[m_nodeGuid] = 0;
             }
 
-            while (context.CompositeNodeIndex[NodeGuid] < m_nodes.Count)
+            while (context.CompositeNodeIndex[m_nodeGuid] < m_nodes.Count)
             {
-                switch (m_nodes[context.CompositeNodeIndex[NodeGuid]].Evaluate(context))
+                switch (m_nodes[context.CompositeNodeIndex[m_nodeGuid]].Evaluate(context))
                 {
                     case NodeStates.FAILURE:
-                        context.CompositeNodeIndex[NodeGuid]++;
+                        context.CompositeNodeIndex[m_nodeGuid]++;
                         break;
                     case NodeStates.SUCCESS:
                         m_nodeState = NodeStates.SUCCESS;
                         //If Success reset nodes progress
-                        context.CompositeNodeIndex[NodeGuid] = 0;
+                        context.CompositeNodeIndex[m_nodeGuid] = 0;
                         return m_nodeState;
                     case NodeStates.RUNNING:
                         m_nodeState = NodeStates.RUNNING;
@@ -47,7 +47,7 @@ namespace BehaviourTree
                         continue;
                 }
             }
-            context.CompositeNodeIndex[NodeGuid] = 0;
+            context.CompositeNodeIndex[m_nodeGuid] = 0;
             m_nodeState = NodeStates.FAILURE;
             return m_nodeState;
         }

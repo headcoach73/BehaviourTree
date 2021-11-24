@@ -9,13 +9,13 @@ namespace BehaviourTree.Editor
 {
     public class NodeSearchWindow : ScriptableObject, ISearchWindowProvider
     {
-        private BehaviourTreeGraphView _graphView;
-        private EditorWindow _window;
+        private BehaviourTreeGraphView m_graphView;
+        private EditorWindow m_window;
 
         public void Init(BehaviourTreeGraphView graphView, EditorWindow window)
         {
-            _graphView = graphView;
-            _window = window;
+            m_graphView = graphView;
+            m_window = window;
         }
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
@@ -47,21 +47,21 @@ namespace BehaviourTree.Editor
 
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
-            var worldMousePosition = _window.rootVisualElement.ChangeCoordinatesTo(_window.rootVisualElement.parent, context.screenMousePosition - _window.position.position);
-            var localMousePosition = _graphView.contentViewContainer.WorldToLocal(worldMousePosition);
+            var worldMousePosition = m_window.rootVisualElement.ChangeCoordinatesTo(m_window.rootVisualElement.parent, context.screenMousePosition - m_window.position.position);
+            var localMousePosition = m_graphView.contentViewContainer.WorldToLocal(worldMousePosition);
             switch (SearchTreeEntry.userData)
             {
                 case SelectorGraphNode selectorGraphNode:
-                    _graphView.CreateSelectorGraphNode(localMousePosition);
+                    m_graphView.CreateSelectorGraphNode(localMousePosition);
                     return true;
                 case SequenceGraphNode sequenceGraphNode:
-                    _graphView.CreateSequenceGraphNode(localMousePosition);
+                    m_graphView.CreateSequenceGraphNode(localMousePosition);
                     return true;
                 case LeafGraphNode leafGraphNode:
-                    _graphView.CreateLeafGraphNode(localMousePosition);
+                    m_graphView.CreateLeafGraphNode(localMousePosition);
                     return true;
                 case RepeaterGraphNode repeaterGraphNode:
-                    _graphView.CreateRepeaterGraphNode(localMousePosition);
+                    m_graphView.CreateRepeaterGraphNode(localMousePosition);
                     return true;
                 default:
                     return false;

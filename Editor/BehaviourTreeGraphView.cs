@@ -200,7 +200,7 @@ namespace BehaviourTree.Editor
             if (leafGraphNode.leafScript != null)
             {
                 leafGraphNode.title = leafGraphNode.leafScript.name;
-                scriptDescription.text = leafGraphNode.leafScript.description;
+                scriptDescription.text = leafGraphNode.leafScript.Description;
             }
 
             var outputPort = GeneratePort(leafGraphNode, Direction.Output, Port.Capacity.Single);
@@ -214,7 +214,7 @@ namespace BehaviourTree.Editor
             logicField.value = leafGraphNode.leafScript;
             logicField.RegisterValueChangedCallback(evt => leafGraphNode.leafScript = evt.newValue as LeafScript);
             logicField.RegisterValueChangedCallback(evt => leafGraphNode.title = evt.newValue != null? evt.newValue.name : "Leaf Node");
-            logicField.RegisterValueChangedCallback(evt => scriptDescription.text = evt.newValue != null ? ((LeafScript)evt.newValue).description : "");
+            logicField.RegisterValueChangedCallback(evt => scriptDescription.text = evt.newValue != null ? ((LeafScript)evt.newValue).Description : "");
 
             leafGraphNode.inputContainer.Add(scriptDescription);
             leafGraphNode.mainContainer.Add(fieldLabel);

@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Testing
 {
     public class TestContext : Context
     {
-        public Vector3 location;
+        public Vector3 Location;
     }
 }
 

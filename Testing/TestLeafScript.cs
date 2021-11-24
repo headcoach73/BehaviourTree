@@ -12,7 +12,7 @@ namespace BehaviourTree
 
         public TestLeafScript()
         {
-            description = "A Leaf Script made for testing purposes";
+            Description = "A Leaf Script made for testing purposes";
         }
 
         public override NodeStates Evaluate(Context context)

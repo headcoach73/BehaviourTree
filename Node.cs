@@ -14,9 +14,9 @@ namespace BehaviourTree
 
         /* The current state of the node */
         protected NodeStates m_nodeState;
-        protected string NodeGuid;
+        protected string m_nodeGuid;
 
-        public NodeStates nodeState
+        public NodeStates NodeState
         {
             get { return m_nodeState; }
         }

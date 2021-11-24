@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -11,8 +10,8 @@ namespace BehaviourTree
         public string Guid;
         public Vector2 Position;
         public BehaviourTreeNodeType NodeType;
-        public LeafScript leafScript;
-        public int maxNumberOfRepeats;
-        public Repeater.Mode repeatType;
+        public LeafScript LeafScript;
+        public int MaxNumberOfRepeats;
+        public Repeater.Mode RepeatType;
     }
 }

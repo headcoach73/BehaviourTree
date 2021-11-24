@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -15,28 +14,11 @@ namespace BehaviourTree
         public List<BehaviourTreeNodeData> BehaviourTreeNodes = new List<BehaviourTreeNodeData>();
         public BehaviourTreeNodeData RootNodeData;
 
-        //private Selector RootNode;
-
         public Node ConstructTree()
         {
             return ConstructNode(RootNodeData);
         }
 
-        //public NodeStates EvaluateTree(Context context)
-        //{
-        //    if (RootNode == null)
-        //    {
-        //        RootNode = ConstructTree() as Selector;
-
-        //        if (RootNode == null)
-        //        {
-        //            Debug.LogWarning("Tree construction failed, root node was null");
-        //            return NodeStates.FAILURE;
-        //        }
-        //    }
-
-        //    return RootNode.Evaluate(context);
-        //}
 
         private Node ConstructNode(BehaviourTreeNodeData nodeData)
         {
@@ -68,10 +50,10 @@ namespace BehaviourTree
                     node = new Sequence(childNodes, nodeData.Guid);
                     break;
                 case BehaviourTreeNodeType.Leaf:
-                    node = new LeafNode(nodeData.leafScript);
+                    node = new LeafNode(nodeData.LeafScript);
                     break;
                 case BehaviourTreeNodeType.Repeater:
-                    node = new Repeater(childNodes[0], nodeData.Guid, nodeData.repeatType, nodeData.maxNumberOfRepeats);
+                    node = new Repeater(childNodes[0], nodeData.Guid, nodeData.RepeatType, nodeData.MaxNumberOfRepeats);
                     break;
                 default:
                     node = new Selector(childNodes, nodeData.Guid);

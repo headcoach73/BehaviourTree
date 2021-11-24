@@ -4,49 +4,43 @@ using UnityEngine;
 
 namespace BehaviourTree
 {
-    
-
     public class Repeater : Node
     {
         public enum Mode { UntilFailure, UntilSuccess, MaxNumberOfTimes }
 
         /** The child nodes for this repeater */
-        [SerializeField]
         protected Node m_node;
 
-        [SerializeField]
-        protected int numberOfRepeats;
+        protected int m_numberOfRepeats;
 
-        [SerializeField]
-        protected Mode repeatType;
+        protected Mode m_repeatType;
 
-        /** The constructor requires a list of child nodes to be  
+        /** The constructor requires a child node to be  
         * passed in*/
         public Repeater(Node node, string nodeGuid, Mode type, int maxNumberOfRepeats)
         {
             m_node = node;
-            NodeGuid = nodeGuid;
-            repeatType = type;
-            numberOfRepeats = maxNumberOfRepeats;
+            m_nodeGuid = nodeGuid;
+            m_repeatType = type;
+            m_numberOfRepeats = maxNumberOfRepeats;
         }
-        /* If any of the children reports a success, the selector will 
-        * immediately report a success upwards. If all children fail, 
-        * it will report a failure instead.*/
+        /* This node will return running until the set condition is met
+        * UntilFailure,  UntilSuccess or until a MaxNumberOfTimes */
         public override NodeStates Evaluate(Context context)
         {
-            if (!context.CompositeNodeIndex.ContainsKey(NodeGuid))
+            if (!context.CompositeNodeIndex.ContainsKey(m_nodeGuid))
             {
-                context.CompositeNodeIndex[NodeGuid] = 0;
+                context.CompositeNodeIndex[m_nodeGuid] = 0;
             }
 
-            while (!(context.CompositeNodeIndex[NodeGuid] > numberOfRepeats && repeatType == Mode.MaxNumberOfTimes))
+            while (!(context.CompositeNodeIndex[m_nodeGuid] > m_numberOfRepeats && m_repeatType == Mode.MaxNumberOfTimes))
             {
                 switch (m_node.Evaluate(context))
                 {
                     case NodeStates.FAILURE:
-                        if (repeatType == Mode.UntilFailure) 
+                        if (m_repeatType == Mode.UntilFailure) 
                         {
-                            context.CompositeNodeIndex[NodeGuid] = 0;
+                            context.CompositeNodeIndex[m_nodeGuid] = 0;
                             return NodeStates.FAILURE;
                         }
                         else
@@ -54,9 +48,9 @@ namespace BehaviourTree
                             return NodeStates.RUNNING;
                         }
                     case NodeStates.SUCCESS:
-                        if (repeatType == Mode.UntilSuccess)
+                        if (m_repeatType == Mode.UntilSuccess)
                         {
-                            context.CompositeNodeIndex[NodeGuid] = 0;
+                            context.CompositeNodeIndex[m_nodeGuid] = 0;
                             return NodeStates.SUCCESS;
                         }
                         else
@@ -70,7 +64,7 @@ namespace BehaviourTree
                         continue;
                 }
             }
-            context.CompositeNodeIndex[NodeGuid] = 0;
+            context.CompositeNodeIndex[m_nodeGuid] = 0;
             m_nodeState = NodeStates.SUCCESS;
             return m_nodeState;
         }
