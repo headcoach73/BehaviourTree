@@ -11,15 +11,13 @@ namespace BehaviourTree.Editor
 {
     public class BehaviourTreeGraphNode : UnityEditor.Experimental.GraphView.Node
     {
-        public string GUID;
+        public string Guid;
 
-        //public BehaviourTree.Node node;
+        public bool RootNode = false;
 
-        public bool rootNode = false;
+        public AllowedChildren AllowedChildren;
 
-        public AllowedChildren allowedChildren;
-
-        public BehaviourTreeNodeType nodeType;
+        public BehaviourTreeNodeType NodeType;
     }
 
     public enum AllowedChildren {Single, Multi, None }
@@ -28,8 +26,8 @@ namespace BehaviourTree.Editor
     {
         public SelectorGraphNode()
         {
-            allowedChildren = AllowedChildren.Multi;
-            nodeType = BehaviourTreeNodeType.Selector;
+            AllowedChildren = AllowedChildren.Multi;
+            NodeType = BehaviourTreeNodeType.Selector;
         }
     }
 
@@ -37,24 +35,24 @@ namespace BehaviourTree.Editor
     {
         public SequenceGraphNode()
         {
-            allowedChildren = AllowedChildren.Multi;
-            nodeType = BehaviourTreeNodeType.Sequence;
+            AllowedChildren = AllowedChildren.Multi;
+            NodeType = BehaviourTreeNodeType.Sequence;
         }
     }
     public class RepeaterGraphNode : BehaviourTreeGraphNode
     {
-        public Repeater.Mode repeatMode;
-        public string maxNumberOfRepeats;
+        public Repeater.Mode RepeatMode;
+        public string MaxNumberOfRepeats;
         public RepeaterGraphNode()
         {
-            allowedChildren = AllowedChildren.Single;
-            nodeType = BehaviourTreeNodeType.Repeater;
+            AllowedChildren = AllowedChildren.Single;
+            NodeType = BehaviourTreeNodeType.Repeater;
         }
 
         public void CheckNumberOfRepeats(string inputString, TextField field) 
         {
-            maxNumberOfRepeats = Regex.Replace(inputString, @"[^0-9]", "");
-            field.SetValueWithoutNotify(maxNumberOfRepeats);
+            MaxNumberOfRepeats = Regex.Replace(inputString, @"[^0-9]", "");
+            field.SetValueWithoutNotify(MaxNumberOfRepeats);
         }
 
         public void CreateEnumField(string label, Enum defaultEnum)
@@ -62,7 +60,7 @@ namespace BehaviourTree.Editor
             var enumLabel = new Label(label);
             contentContainer.Add(enumLabel);
             var enumField = new EnumField(defaultEnum);
-            enumField.RegisterValueChangedCallback(evt => repeatMode = (Repeater.Mode)evt.newValue);
+            enumField.RegisterValueChangedCallback(evt => RepeatMode = (Repeater.Mode)evt.newValue);
             contentContainer.Add(enumField);
         }
     }
@@ -70,11 +68,11 @@ namespace BehaviourTree.Editor
 
     public class LeafGraphNode : BehaviourTreeGraphNode
     {
-        public LeafScript leafScript;
+        public LeafScript LeafScript;
         public LeafGraphNode()
         {
-            allowedChildren = AllowedChildren.None;
-            nodeType = BehaviourTreeNodeType.Leaf;
+            AllowedChildren = AllowedChildren.None;
+            NodeType = BehaviourTreeNodeType.Leaf;
         }
 
         public void CreateEnumField(string label, Enum defaultEnum)

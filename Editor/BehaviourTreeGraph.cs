@@ -11,8 +11,10 @@ namespace BehaviourTree.Editor
 {
     public class BehaviourTreeGraph : EditorWindow
     {
-        private BehaviourTreeGraphView _graphView;
-        private BehaviourTreeContainer treeContainer;
+        private BehaviourTreeGraphView m_graphView;
+        private BehaviourTreeContainer m_treeContainer;
+
+        // Don't need this anymore as double clicking on the container object opens the graph, see OpenBehaviourTreeHandler.cs
 
         //[MenuItem("Graph/Behaviour Tree Editor")]
         //public static void OpenBehaviourTreeGraphWindow()
@@ -25,25 +27,25 @@ namespace BehaviourTree.Editor
         public static void OpenBehaviourTreeGraphWindow(BehaviourTreeContainer _treeContainer)
         {
             var window = CreateWindow<BehaviourTreeGraph>();
-            window.treeContainer = _treeContainer;
+            window.m_treeContainer = _treeContainer;
             window.LoadGraph();
 
         }
 
         private void OnEnable()
         {
-            if (treeContainer != null)
+            if (m_treeContainer != null)
             {
                 LoadGraph();
-
             }
         }
 
         private void LoadGraph()
         {
-            titleContent = new GUIContent($"{treeContainer.name} - Behaviour Tree Graph");
+            titleContent = new GUIContent($"{m_treeContainer.name} - Behaviour Tree Graph");
             ConstructGraph();
-            RequestDataOperation(false);
+            var saveUtility = GraphSaveUtility.GetInstance(m_graphView, m_treeContainer);
+            saveUtility.LoadGraph();
         }
 
         private void ConstructGraph()
@@ -54,51 +56,38 @@ namespace BehaviourTree.Editor
 
         private void ConstructGraphView()
         {
-            _graphView = new BehaviourTreeGraphView(this)
+            m_graphView = new BehaviourTreeGraphView(this)
             {
                 name = "Behaviour Tree Graph",
             };
 
-            _graphView.StretchToParentSize();
-            rootVisualElement.Add(_graphView);
+            m_graphView.StretchToParentSize();
+            rootVisualElement.Add(m_graphView);
         }
 
         private void GenerateToolbar()
         {
             var toolbar = new Toolbar();
 
-            var fileNameLabel = new Label(treeContainer.name);
+            var fileNameLabel = new Label(m_treeContainer.name);
             toolbar.Add(fileNameLabel);
-            toolbar.Add(new Button(() => RequestDataOperation(true)) { text = "Save" });
+            toolbar.Add(new Button(() => SaveCurrentGraph()) { text = "Save" });
 
             rootVisualElement.Add(toolbar);
         }
 
-        private void RequestDataOperation(bool save)
+        private void SaveCurrentGraph()
         {
-            if (treeContainer == null)
-            {
-                EditorUtility.DisplayDialog("Invalid file name!", "Please enter a valid file name.", "OK");
-                return;
-            }
-
-            var saveUtility = GraphSaveUtility.GetInstance(_graphView, treeContainer);
-            if (save)
-            {
-                saveUtility.SaveGraph();
-            }
-            else
-            {
-                saveUtility.LoadGraph();
-            }
+            var saveUtility = GraphSaveUtility.GetInstance(m_graphView, m_treeContainer);
+            saveUtility.SaveGraph();
         }
 
         private void OnDisable()
         {
-            if (_graphView != null) 
+            if (m_graphView != null) 
             {
-                RequestDataOperation(true);
-                rootVisualElement.Remove(_graphView);
+                SaveCurrentGraph();
+                rootVisualElement.Remove(m_graphView);
             } 
         }
     }

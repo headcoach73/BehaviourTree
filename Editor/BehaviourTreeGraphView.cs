@@ -12,9 +12,9 @@ namespace BehaviourTree.Editor
 {
     public class BehaviourTreeGraphView : GraphView
     {
-        public readonly Vector2 defaultNodeSize = new Vector2(150, 200);
+        public readonly Vector2 DefaultNodeSize = new Vector2(150, 200);
 
-        private NodeSearchWindow _searchWindow;
+        private NodeSearchWindow m_searchWindow;
 
         public BehaviourTreeGraphView(EditorWindow window)
         {
@@ -33,28 +33,15 @@ namespace BehaviourTree.Editor
             AddSearchWindow(window);
         }
 
-        private void AddSearchWindow(EditorWindow window)
-        {
-            _searchWindow = ScriptableObject.CreateInstance<NodeSearchWindow>();
-            _searchWindow.Init(this, window);
-            nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
-        }
-
-        private Port GeneratePort(BehaviourTreeGraphNode node, Direction portDirection, Port.Capacity capacity = Port.Capacity.Single)
-        {
-            return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float)); //Arbitary Type
-        }
-
         public SelectorGraphNode GenerateEntryPointNode()
         {
+            //Root node in a behaviour tree is always a selector node
             var node = new SelectorGraphNode
             {
                 title = "Root Selector Node",
-                GUID = Guid.NewGuid().ToString(),
-                rootNode = true,
+                Guid = Guid.NewGuid().ToString(),
+                RootNode = true,
             };
-
-            //node.inputContainer.style.flexDirection = FlexDirection.Row;
 
             var generatedPort = GeneratePort(node, Direction.Input);
             generatedPort.portName = "Child 1";
@@ -70,8 +57,6 @@ namespace BehaviourTree.Editor
 
             node.RefreshExpandedState();
             node.RefreshPorts();
-
-            
 
             node.SetPosition(new Rect(250, 200, 100, 150));
 
@@ -98,22 +83,20 @@ namespace BehaviourTree.Editor
             var selectorGraphNode = new SelectorGraphNode
             {
                 title = "Selector Node",
-                GUID = Guid.NewGuid().ToString(),
+                Guid = Guid.NewGuid().ToString(),
             };
-
             
             var outputPort = GeneratePort(selectorGraphNode, Direction.Output, Port.Capacity.Single);
             outputPort.portName = "Output";
             selectorGraphNode.outputContainer.Add(outputPort);
 
-            //selectorGraphNode.inputContainer.style.flexDirection = FlexDirection.Row;
             var button = new Button(() => AddChoicePort(selectorGraphNode));
             button.text = "New Child";
             selectorGraphNode.titleContainer.Add(button);
 
             selectorGraphNode.RefreshExpandedState();
             selectorGraphNode.RefreshPorts();
-            selectorGraphNode.SetPosition(new Rect(positon, defaultNodeSize));
+            selectorGraphNode.SetPosition(new Rect(positon, DefaultNodeSize));
 
             AddElement(selectorGraphNode);
 
@@ -125,7 +108,7 @@ namespace BehaviourTree.Editor
             var sequenceGraphNode = new SequenceGraphNode
             {
                 title = "Sequence Node",
-                GUID = Guid.NewGuid().ToString(),
+                Guid = Guid.NewGuid().ToString(),
             };
 
 
@@ -133,15 +116,13 @@ namespace BehaviourTree.Editor
             outputPort.portName = "Output";
             sequenceGraphNode.outputContainer.Add(outputPort);
 
-            //sequenceGraphNode.inputContainer.style.flexDirection = FlexDirection.Row;
-
             var button = new Button(() => AddChoicePort(sequenceGraphNode));
             button.text = "New Child";
             sequenceGraphNode.titleContainer.Add(button);
 
             sequenceGraphNode.RefreshExpandedState();
             sequenceGraphNode.RefreshPorts();
-            sequenceGraphNode.SetPosition(new Rect(positon, defaultNodeSize));
+            sequenceGraphNode.SetPosition(new Rect(positon, DefaultNodeSize));
 
             AddElement(sequenceGraphNode);
 
@@ -153,9 +134,9 @@ namespace BehaviourTree.Editor
             var repeaterGraphNode = new RepeaterGraphNode
             {
                 title = "Repeater Node",
-                GUID = Guid.NewGuid().ToString(),
-                maxNumberOfRepeats = maxRepeats,
-                repeatMode = _repeatType,
+                Guid = Guid.NewGuid().ToString(),
+                MaxNumberOfRepeats = maxRepeats,
+                RepeatMode = _repeatType,
             };
 
 
@@ -165,12 +146,12 @@ namespace BehaviourTree.Editor
 
             AddChoicePort(repeaterGraphNode, " ", false);
 
-            repeaterGraphNode.CreateEnumField("Mode", repeaterGraphNode.repeatMode);
+            repeaterGraphNode.CreateEnumField("Mode", repeaterGraphNode.RepeatMode);
 
             var fieldLabel = new Label("Number of Repeats:");
 
             var numberField = new TextField();
-            numberField.value = repeaterGraphNode.maxNumberOfRepeats;
+            numberField.value = repeaterGraphNode.MaxNumberOfRepeats;
             numberField.RegisterValueChangedCallback(evt => repeaterGraphNode.CheckNumberOfRepeats(evt.newValue, numberField));
             
 
@@ -179,7 +160,7 @@ namespace BehaviourTree.Editor
 
             repeaterGraphNode.RefreshExpandedState();
             repeaterGraphNode.RefreshPorts();
-            repeaterGraphNode.SetPosition(new Rect(positon, defaultNodeSize));
+            repeaterGraphNode.SetPosition(new Rect(positon, DefaultNodeSize));
 
             AddElement(repeaterGraphNode);
 
@@ -191,16 +172,16 @@ namespace BehaviourTree.Editor
             var leafGraphNode = new LeafGraphNode
             {
                 title = "Leaf Node",
-                GUID = Guid.NewGuid().ToString(),
-                leafScript = _leafScript,
+                Guid = Guid.NewGuid().ToString(),
+                LeafScript = _leafScript,
             };
 
             var scriptDescription = new Label();
 
-            if (leafGraphNode.leafScript != null)
+            if (leafGraphNode.LeafScript != null)
             {
-                leafGraphNode.title = leafGraphNode.leafScript.name;
-                scriptDescription.text = leafGraphNode.leafScript.Description;
+                leafGraphNode.title = leafGraphNode.LeafScript.name;
+                scriptDescription.text = leafGraphNode.LeafScript.Description;
             }
 
             var outputPort = GeneratePort(leafGraphNode, Direction.Output, Port.Capacity.Single);
@@ -208,11 +189,12 @@ namespace BehaviourTree.Editor
             leafGraphNode.outputContainer.Add(outputPort);
 
             var fieldLabel = new Label("Leaf Script:");
-
             var logicField = new ObjectField();
             logicField.objectType = typeof(LeafScript);
-            logicField.value = leafGraphNode.leafScript;
-            logicField.RegisterValueChangedCallback(evt => leafGraphNode.leafScript = evt.newValue as LeafScript);
+            logicField.value = leafGraphNode.LeafScript;
+            logicField.RegisterValueChangedCallback(evt => leafGraphNode.LeafScript = evt.newValue as LeafScript);
+
+            //These events are used to update the nodes visual appearence when applying a LeafScript
             logicField.RegisterValueChangedCallback(evt => leafGraphNode.title = evt.newValue != null? evt.newValue.name : "Leaf Node");
             logicField.RegisterValueChangedCallback(evt => scriptDescription.text = evt.newValue != null ? ((LeafScript)evt.newValue).Description : "");
 
@@ -222,7 +204,7 @@ namespace BehaviourTree.Editor
 
             leafGraphNode.RefreshExpandedState();
             leafGraphNode.RefreshPorts();
-            leafGraphNode.SetPosition(new Rect(positon, defaultNodeSize));
+            leafGraphNode.SetPosition(new Rect(positon, DefaultNodeSize));
 
             AddElement(leafGraphNode);
 
@@ -231,11 +213,12 @@ namespace BehaviourTree.Editor
 
         public void AddChoicePort(BehaviourTreeGraphNode graphNode, string portName = "", bool createDeleteButton = true)
         {
-            if (graphNode.allowedChildren == AllowedChildren.None) return;
+            if (graphNode.AllowedChildren == AllowedChildren.None) return;
 
             var outputPortCount = graphNode.inputContainer.Query("connector").ToList().Count;
 
-            if (graphNode.allowedChildren == AllowedChildren.Single && outputPortCount > 0)
+            //Don't allow more then one port if Allowed children is set to single
+            if (graphNode.AllowedChildren == AllowedChildren.Single && outputPortCount > 0)
             {
                 return;
             }
@@ -262,7 +245,6 @@ namespace BehaviourTree.Editor
         {
             var targetEdge = edges.ToList().Where(x => x.input.portName == generatedPort.portName && x.input.node == generatedPort.node);
             
-
             if (targetEdge.Any())
             { 
                 var edge = targetEdge.First();
@@ -273,6 +255,18 @@ namespace BehaviourTree.Editor
             graphNode.inputContainer.Remove(generatedPort);
             graphNode.RefreshPorts();
             graphNode.RefreshExpandedState();
+        }
+
+        private void AddSearchWindow(EditorWindow window)
+        {
+            m_searchWindow = ScriptableObject.CreateInstance<NodeSearchWindow>();
+            m_searchWindow.Init(this, window);
+            nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), m_searchWindow);
+        }
+
+        private Port GeneratePort(BehaviourTreeGraphNode node, Direction portDirection, Port.Capacity capacity = Port.Capacity.Single)
+        {
+            return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float)); //Arbitary Type
         }
     }
 }
